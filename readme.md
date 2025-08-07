@@ -48,16 +48,17 @@ journalyst-analytics/
 ### 1. Clone and Setup
 
 ```bash
-cd journalyst
+git clone https://github.com/ChetanGaurkhede/Journalist.git
 ```
 
 ### 2. Backend Setup
 
 ```bash
-mkdir server
 cd server
 npm install
 npm run dev
+# client will run on http://localhost:3000
+
 ```
 
 
@@ -67,17 +68,6 @@ npm run dev
 cd client
 npm install
 npm run dev
-
-
-```bash
-cd server
-npm run dev
-# Server will run on http://localhost:3001
+# Server will run on http://localhost:5173
 ```
 
-#### Terminal 2 (Frontend):
-```bash
-cd client
-npm start
-# React app will run on http://localhost:5173
-```
