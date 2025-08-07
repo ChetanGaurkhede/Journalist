@@ -38,7 +38,6 @@ const TradingDashboard = () => {
       try {
         setLoading(true);
         setError(null);
-
         const res = await axios.get(import.meta.env.VITE_API_URL);
         setAnalytics(res.data.data);
       } catch (err) {
@@ -51,11 +50,6 @@ const TradingDashboard = () => {
     fetchAnalytics();
   }, []);
 
-  useEffect(() => {
-    if (analytics) {
-      console.log("Updated analytics:", analytics);
-    }
-  }, [analytics]);
 
   const TradingChart = ({ data, title, type = "line" }) => {
     const chartRef = useRef(null);
@@ -179,7 +173,6 @@ const TradingDashboard = () => {
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-orange-500 mb-4"></div>
-          <p className="text-gray-400">Loading trading data...</p>
         </div>
       </div>
     );

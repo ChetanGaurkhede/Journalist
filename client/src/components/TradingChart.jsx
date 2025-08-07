@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from "react";
 
-const TradingChart = ({ data, title, type = "line" }) => {
+const TradingChart = ({ data, title, chartJsLoaded, type = "line" }) => {
+
+  
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
   useEffect(() => {
-    if (!window.Chart || !data) return;
+    if (!chartJsLoaded || !window.Chart || !data) return;
 
     if (chartInstance.current) {
       chartInstance.current.destroy();
@@ -42,8 +44,11 @@ const TradingChart = ({ data, title, type = "line" }) => {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        backgroundColor: "#1f2937",
         plugins: {
-          legend: { display: false },
+          legend: {
+            display: false,
+          },
           tooltip: {
             backgroundColor: "rgba(0, 0, 0, 0.9)",
             titleColor: "#f97316",
@@ -64,11 +69,20 @@ const TradingChart = ({ data, title, type = "line" }) => {
         },
         scales: {
           x: {
-            grid: { color: "#374151", borderColor: "#6b7280" },
-            ticks: { color: "#9ca3af", font: { size: 12 } },
+            grid: {
+              color: "#374151",
+              borderColor: "#6b7280",
+            },
+            ticks: {
+              color: "#9ca3af",
+              font: { size: 12 },
+            },
           },
           y: {
-            grid: { color: "#374151", borderColor: "#6b7280" },
+            grid: {
+              color: "#374151",
+              borderColor: "#6b7280",
+            },
             ticks: {
               color: "#9ca3af",
               font: { size: 12 },
@@ -90,7 +104,7 @@ const TradingChart = ({ data, title, type = "line" }) => {
         chartInstance.current.destroy();
       }
     };
-  }, [data, title, type]);
+  }, [data, chartJsLoaded, title, type]);
 
   return (
     <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
