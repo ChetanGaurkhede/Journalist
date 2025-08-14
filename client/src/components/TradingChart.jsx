@@ -1,11 +1,31 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-const TradingChart = ({ data, title, chartJsLoaded, type = "line" }) => {
-
-  
+const TradingChart = ({ data, title, type = "line" }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
+  const [chartJsLoaded, setChartJsLoaded] = useState(false);
 
+  // Dynamically load Chart.js
+  useEffect(() => {
+    if (window.Chart) {
+      setChartJsLoaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js";
+    script.onload = () => setChartJsLoaded(true);
+    document.head.appendChild(script);
+
+    return () => {
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
+  // Initialize chart when Chart.js and data are ready
   useEffect(() => {
     if (!chartJsLoaded || !window.Chart || !data) return;
 
@@ -15,8 +35,8 @@ const TradingChart = ({ data, title, chartJsLoaded, type = "line" }) => {
 
     const ctx = chartRef.current.getContext("2d");
 
-    const config = {
-      type: type,
+    chartInstance.current = new window.Chart(ctx, {
+      type,
       data: {
         labels: data.map((d) => d.date || d.time),
         datasets: [
@@ -34,7 +54,7 @@ const TradingChart = ({ data, title, chartJsLoaded, type = "line" }) => {
             fill: type === "line",
             tension: 0.4,
             pointBackgroundColor: "#10b981",
-            pointBorderColor: "#1f2937",
+            pointBorderColor: "#ffffff",
             pointBorderWidth: 2,
             pointRadius: type === "line" ? 6 : 0,
             pointHoverRadius: 8,
@@ -44,24 +64,19 @@ const TradingChart = ({ data, title, chartJsLoaded, type = "line" }) => {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        backgroundColor: "#1f2937",
         plugins: {
-          legend: {
-            display: false,
-          },
+          legend: { display: false },
           tooltip: {
-            backgroundColor: "rgba(0, 0, 0, 0.9)",
-            titleColor: "#f97316",
-            bodyColor: "#ffffff",
+            backgroundColor: "#ffffff",
+            titleColor: "#000000",
+            bodyColor: "#000000",
             borderColor: "#f97316",
             borderWidth: 1,
             cornerRadius: 8,
             callbacks: {
               label: function (context) {
                 const value = context.parsed.y;
-                if (type === "bar") {
-                  return `Volume: ${value.toLocaleString()}`;
-                }
+                if (type === "bar") return `Volume: ${value.toLocaleString()}`;
                 return `${title}: $${value.toLocaleString()}`;
               },
             },
@@ -69,46 +84,32 @@ const TradingChart = ({ data, title, chartJsLoaded, type = "line" }) => {
         },
         scales: {
           x: {
-            grid: {
-              color: "#374151",
-              borderColor: "#6b7280",
-            },
-            ticks: {
-              color: "#9ca3af",
-              font: { size: 12 },
-            },
+            grid: { color: "#e5e7eb" }, // Light gray grid
+            ticks: { color: "#374151", font: { size: 12 } }, // Dark text
           },
           y: {
-            grid: {
-              color: "#374151",
-              borderColor: "#6b7280",
-            },
+            grid: { color: "#e5e7eb" },
             ticks: {
-              color: "#9ca3af",
+              color: "#374151",
               font: { size: 12 },
-              callback: function (value) {
-                return type === "bar"
+              callback: (value) =>
+                type === "bar"
                   ? value.toLocaleString()
-                  : "$" + value.toLocaleString();
-              },
+                  : "$" + value.toLocaleString(),
             },
           },
         },
       },
-    };
-
-    chartInstance.current = new window.Chart(ctx, config);
+    });
 
     return () => {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
+      if (chartInstance.current) chartInstance.current.destroy();
     };
-  }, [data, chartJsLoaded, title, type]);
+  }, [chartJsLoaded, data, title, type]);
 
   return (
-    <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+    <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
         <span className="text-orange-500 mr-2">📈</span>
         {title}
       </h3>
